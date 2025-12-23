@@ -79,15 +79,16 @@ function renderEntries() {
 
   entries.forEach((e, i) => {
     container.innerHTML += `
-      <div style="background:#f4f4f4;padding:10px;margin:10px 0">
+      <div class="entry-card">
         <p><strong>${e.date}</strong> (${e.day})</p>
-        <p>${e.branch}</p>
-        <p>${e.timeIn} – ${e.timeOut}</p>
-        <p>${e.hours}</p>
-        <p>Gross: $${e.gross}</p>
-        <button onclick="editEntry(${i})">Edit</button>
-        <button onclick="deleteEntry(${i})">Delete</button>
-
+        <p><strong>Branch:</strong> ${e.branch}</p>
+        <p><strong>Time:</strong> ${e.timeIn} – ${e.timeOut}</p>
+        <p><strong>Total Hours:</strong> ${e.hours}</p>
+        <p><strong>Gross:</strong> $${e.gross} | <strong>Net:</strong> $${e.net} | <strong>CPF:</strong> $${e.cpf}</p>
+        <div class="entry-buttons">
+          <button onclick="editEntry(${i})">Edit</button>
+          <button onclick="deleteEntry(${i})">Delete</button>
+        </div>
       </div>
     `;
   });
@@ -156,3 +157,4 @@ document.getElementById("clearAll").addEventListener("click", () => {
 
 // Initial render
 renderEntries();
+
