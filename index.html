@@ -16,6 +16,14 @@
     <h1>Timesheet App</h1>
   </header>
 
+  <!-- Dashboard summary -->
+  <div id="dashboard">
+    <p><strong>Total Hours:</strong> <span id="totalHours">0</span></p>
+    <p><strong>Total Gross:</strong> $<span id="totalGross">0.00</span></p>
+    <p><strong>Total Net:</strong> $<span id="totalNet">0.00</span></p>
+    <p><strong>Total CPF:</strong> $<span id="totalCPF">0.00</span></p>
+  </div>
+
   <!-- Form -->
   <form id="timesheetForm">
     <label for="dateWorked">Date Worked</label>
@@ -38,9 +46,7 @@
     <button type="submit">Add Entry</button>
   </form>
 
-  <!-- Results -->
-  <div id="result"></div>
-
+  <!-- Saved entries -->
   <h2>Saved Entries</h2>
   <button id="clearAll">Clear All Entries</button>
   <div id="entries"></div>
@@ -48,4 +54,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
