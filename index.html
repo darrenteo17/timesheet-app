@@ -3,54 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timesheet App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Timesheet & Notes</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#007bff">
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <h1>Timesheet App</h1>
-  </header>
+<header>
+  <h1>Work Tracker</h1>
+</header>
 
-  <!-- Dashboard summary -->
-  <div id="dashboard">
-    <p><strong>Total Hours:</strong> <span id="totalHours">0</span></p>
-    <p><strong>Total Gross:</strong> $<span id="totalGross">0.00</span></p>
-    <p><strong>Total Net:</strong> $<span id="totalNet">0.00</span></p>
-    <p><strong>Total CPF:</strong> $<span id="totalCPF">0.00</span></p>
+<main>
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+    <div class="dashboard-card">
+      <p>Total Hours: <span id="totalHours">0</span></p>
+      <p>Total Gross: $<span id="totalGross">0</span></p>
+      <p>Total Net: $<span id="totalNet">0</span></p>
+      <p>Total CPF: $<span id="totalCPF">0</span></p>
+    </div>
+    <button id="clearAll" class="clear-btn">Clear All Entries</button>
   </div>
 
-  <!-- Form -->
-  <form id="timesheetForm">
-    <label for="dateWorked">Date Worked</label>
-    <input type="date" id="dateWorked" required>
+  <!-- Timesheet Section -->
+  <section id="timesheetSection">
+    <div id="entries"></div>
+  </section>
 
-    <label for="branch">Branch</label>
-    <select id="branch" required>
-      <option value="">--Select Branch--</option>
-      <option value="Buangkok">Buangkok</option>
-      <option value="Ang Mo Kio">Ang Mo Kio</option>
-      <option value="Fernvale">Fernvale</option>
-    </select>
+  <!-- Notes Section -->
+  <section id="notesSection" style="display:none;">
+    <div id="notesContainer"></div>
 
-    <label for="timeIn">Time In</label>
-    <input type="time" id="timeIn" required>
+    <!-- Floating Action Button for Notes -->
+    <button id="fabNotes" class="fab">+</button>
 
-    <label for="timeOut">Time Out</label>
-    <input type="time" id="timeOut" required>
+    <!-- Modal for Notes -->
+    <div id="noteModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitle">Add Note</h2>
+        <form id="noteForm">
+          <div class="input-group">
+            <input type="text" id="noteTitle" placeholder=" " required>
+            <label for="noteTitle">Title</label>
+          </div>
+          <div class="input-group">
+            <textarea id="noteContent" placeholder=" " rows="4" required></textarea>
+            <label for="noteContent">Content</label>
+          </div>
+          <button type="submit">Save Note</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
 
-    <button type="submit">Add Entry</button>
-  </form>
+<!-- Bottom Tab Navigation -->
+<nav class="bottom-nav">
+  <button id="tabTimesheet" class="active">Timesheet</button>
+  <button id="tabNotes">Notes</button>
+</nav>
 
-  <!-- Saved entries -->
-  <h2>Saved Entries</h2>
-  <button id="clearAll">Clear All Entries</button>
-  <div id="entries"></div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
