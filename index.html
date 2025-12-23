@@ -7,40 +7,42 @@
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#007bff">
-
 </head>
 <body>
 
-  <h1>Timesheet</h1>
+  <!-- Header -->
+  <header>
+    <h1>Timesheet App</h1>
+  </header>
 
+  <!-- Form -->
   <form id="timesheetForm">
-    <label>Date Worked</label>
+    <label for="dateWorked">Date Worked</label>
     <input type="date" id="dateWorked" required>
 
-    <label>Branch</label>
+    <label for="branch">Branch</label>
     <select id="branch" required>
-        <option value="">--Select Branch--</option>
-        <option value="Buangkok">Buangkok</option>
-        <option value="Ang Mo Kio">Ang Mo Kio</option>
-        <option value="Fernvale">Fernvale</option>
+      <option value="">--Select Branch--</option>
+      <option value="Buangkok">Buangkok</option>
+      <option value="Ang Mo Kio">Ang Mo Kio</option>
+      <option value="Fernvale">Fernvale</option>
     </select>
 
-
-    <label>Time In</label>
+    <label for="timeIn">Time In</label>
     <input type="time" id="timeIn" required>
 
-    <label>Time Out</label>
+    <label for="timeOut">Time Out</label>
     <input type="time" id="timeOut" required>
 
-
-    <button type="submit">Calculate</button>
+    <button type="submit">Add Entry</button>
   </form>
 
+  <!-- Results -->
   <div id="result"></div>
+
   <h2>Saved Entries</h2>
   <button id="clearAll">Clear All Entries</button>
   <div id="entries"></div>
-
 
   <script src="script.js"></script>
 </body>
