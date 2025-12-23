@@ -5,184 +5,202 @@ const HOURLY_RATE = 11;
 const CPF_DEDUCTION = 0.20; // Employee deduction
 const CPF_EMPLOYER = 0.37;   // Employer CPF
 
+// =====================
+// State
+// =====================
 let editIndex = null;
-
-// =====================
-// Load saved entries
-// =====================
+let editNoteIndex = null;
 let entries = JSON.parse(localStorage.getItem("timesheetEntries")) || [];
-let notes = JSON.parse(localStorage.getItem("notesEntries")) || [];
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
 // =====================
 // Helpers
 // =====================
 function formatDate(dateStr) {
   const date = new Date(dateStr);
-  const day = String(date.getDate()).padStart(2,'0');
-  const month = date.toLocaleString('en-US',{month:'short'});
+  if (isNaN(date)) return { display: "Unknown Date", day: "" };
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleString('en-US', { month: 'short' });
   const year = date.getFullYear();
-  const weekday = date.toLocaleDateString('en-US',{weekday:'long'});
-  return { display:`${day} ${month} ${year}`, day:weekday };
+  const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+  return {
+    display: `${day} ${month} ${year}`,
+    day: weekday
+  };
 }
 
 function timeToMinutes(timeStr) {
-  const [h,m]=timeStr.split(":").map(Number);
-  return h*60+m;
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
 }
 
-function calculateTotalTime(timeIn,timeOut) {
-  const diff=timeToMinutes(timeOut)-timeToMinutes(timeIn);
-  const hours=Math.floor(diff/60);
-  const minutes=diff%60;
-  return { text:`${hours}hrs ${minutes}mins`, decimal:hours+minutes/60 };
+function calculateTotalTime(timeIn, timeOut) {
+  const diff = timeToMinutes(timeOut) - timeToMinutes(timeIn);
+  const hours = Math.floor(diff / 60);
+  const minutes = diff % 60;
+  return { text: `${hours}hrs ${minutes}mins`, decimal: hours + minutes / 60 };
 }
 
-function calculateEarnings(decimalHours){
-  const gross=decimalHours*HOURLY_RATE;
-  return { gross, net:gross*(1-CPF_DEDUCTION), cpf:gross*CPF_EMPLOYER };
+function calculateEarnings(decimalHours) {
+  const gross = decimalHours * HOURLY_RATE;
+  return { gross, net: gross - gross * CPF_DEDUCTION, cpf: gross * CPF_EMPLOYER };
 }
+
+function saveEntries() { localStorage.setItem("timesheetEntries", JSON.stringify(entries)); }
+function saveNotes() { localStorage.setItem("notes", JSON.stringify(notes)); }
 
 // =====================
-// DASHBOARD
+// Render Dashboard
 // =====================
-function updateDashboard(entriesToUse=entries){
-  let totalHours=0,totalGross=0,totalNet=0,totalCPF=0;
-  entriesToUse.forEach(e=>{
-    const h=parseFloat(e.hours.split("hrs")[0])+parseFloat(e.hours.split(" ")[1].replace("mins",""))/60;
-    totalHours+=h;
-    totalGross+=parseFloat(e.gross);
-    totalNet+=parseFloat(e.net);
-    totalCPF+=parseFloat(e.cpf);
+function updateDashboard() {
+  let totalHours = 0, totalGross = 0, totalNet = 0, totalCPF = 0;
+  entries.forEach(e => {
+    const h = parseFloat(e.hours.split("hrs")[0]) + parseFloat(e.hours.split(" ")[1].replace("mins",""))/60;
+    totalHours += h;
+    totalGross += parseFloat(e.gross);
+    totalNet += parseFloat(e.net);
+    totalCPF += parseFloat(e.cpf);
   });
-  document.getElementById("totalHours").textContent=totalHours.toFixed(2);
-  document.getElementById("totalGross").textContent=totalGross.toFixed(2);
-  document.getElementById("totalNet").textContent=totalNet.toFixed(2);
-  document.getElementById("totalCPF").textContent=totalCPF.toFixed(2);
+  document.getElementById("totalHours").textContent = totalHours.toFixed(2);
+  document.getElementById("totalGross").textContent = totalGross.toFixed(2);
+  document.getElementById("totalNet").textContent = totalNet.toFixed(2);
+  document.getElementById("totalCPF").textContent = totalCPF.toFixed(2);
 }
 
 // =====================
 // Render Entries
 // =====================
-function renderEntries(){
-  const container=document.getElementById("entries");
-  container.innerHTML="";
-  if(entries.length===0){
-    container.innerHTML="<p>No entries yet.</p>";
-    updateDashboard([]);
+function renderEntries() {
+  const container = document.getElementById("entries");
+  container.innerHTML = "";
+
+  if (entries.length === 0) {
+    container.innerHTML = "<p>No timesheet entries yet.</p>";
     return;
   }
-  const months={};
-  entries.forEach(e=>{
-    if(!months[e.month]) months[e.month]=[];
-    months[e.month].push(e);
+
+  entries.forEach((e, idx) => {
+    const div = document.createElement("div");
+    div.className = "entry-card";
+    div.innerHTML = `
+      <p><strong>${e.displayDate}</strong> (${e.day})</p>
+      <p><strong>Branch:</strong> ${e.branch}</p>
+      <p><strong>Time:</strong> ${e.timeIn} – ${e.timeOut}</p>
+      <p><strong>Total Hours:</strong> ${e.hours}</p>
+      <p><strong>Gross:</strong> $${e.gross} | <strong>Net:</strong> $${e.net} | <strong>CPF:</strong> $${e.cpf}</p>
+      <div class="entry-buttons">
+        <button onclick="editEntry(${idx})">Edit</button>
+        <button onclick="deleteEntry(${idx})">Delete</button>
+      </div>
+    `;
+    container.appendChild(div);
   });
-
-  for(let month in months){
-    let monthHours=0,monthGross=0,monthNet=0,monthCPF=0;
-    months[month].forEach(e=>{
-      const h=parseFloat(e.hours.split("hrs")[0])+parseFloat(e.hours.split(" ")[1].replace("mins",""))/60;
-      monthHours+=h;
-      monthGross+=parseFloat(e.gross);
-      monthNet+=parseFloat(e.net);
-      monthCPF+=parseFloat(e.cpf);
-    });
-
-    container.innerHTML+=`<h3>${month} — Hours: ${monthHours.toFixed(2)}, Gross: $${monthGross.toFixed(2)}, Net: $${monthNet.toFixed(2)}, CPF: $${monthCPF.toFixed(2)}</h3>`;
-
-    months[month].forEach(e=>{
-      container.innerHTML+=`
-      <div class="entry-card">
-        <p><strong>${e.displayDate}</strong> (${e.day})</p>
-        <p><strong>Branch:</strong> ${e.branch}</p>
-        <p><strong>Time:</strong> ${e.timeIn} – ${e.timeOut}</p>
-        <p><strong>Total Hours:</strong> ${e.hours}</p>
-        <p><strong>Gross:</strong> $${e.gross} | <strong>Net:</strong> $${e.net} | <strong>CPF:</strong> $${e.cpf}</p>
-        <div class="entry-buttons">
-          <button onclick="editEntry(${entries.indexOf(e)})">Edit</button>
-          <button onclick="deleteEntry(${entries.indexOf(e)})">Delete</button>
-        </div>
-      </div>`;
-    });
-  }
-  updateDashboard(entries);
 }
 
 // =====================
 // Render Notes
 // =====================
-function renderNotes(){
-  const container=document.getElementById("notesList");
-  container.innerHTML="";
-  if(notes.length===0){
-    container.innerHTML="<p>No notes yet.</p>";
+function renderNotes() {
+  const container = document.getElementById("notes");
+  container.innerHTML = "";
+
+  if (notes.length === 0) {
+    container.innerHTML = "<p>No notes yet.</p>";
     return;
   }
-  notes.forEach((n,i)=>{
-    container.innerHTML+=`
-    <div class="note-card">
-      <p>${n.content.replace(/\n/g,'<br>')}</p>
+
+  notes.forEach((n, idx) => {
+    const div = document.createElement("div");
+    div.className = "note-card";
+    div.innerHTML = `
+      <p>${n.text.replace(/\n/g,"<br>")}</p>
       <div class="note-buttons">
-        <button onclick="editNote(${i})">Edit</button>
-        <button onclick="deleteNote(${i})">Delete</button>
+        <button onclick="editNote(${idx})">Edit</button>
+        <button onclick="deleteNote(${idx})">Delete</button>
       </div>
-    </div>`;
+    `;
+    container.appendChild(div);
   });
 }
 
 // =====================
-// Add/Edit/Delete Entries
+// Edit / Delete Timesheet
 // =====================
-function deleteEntry(index){
-  if(confirm("Delete this entry?")){
-    entries.splice(index,1);
-    localStorage.setItem("timesheetEntries",JSON.stringify(entries));
+function editEntry(idx) {
+  const e = entries[idx];
+  document.getElementById("dateWorked").value = e.rawDate;
+  document.getElementById("branch").value = e.branch;
+  document.getElementById("timeIn").value = e.timeIn;
+  document.getElementById("timeOut").value = e.timeOut;
+  editIndex = idx;
+  openModal("entry");
+}
+
+function deleteEntry(idx) {
+  if (confirm("Delete this entry?")) {
+    entries.splice(idx,1);
+    saveEntries();
+    updateDashboard();
     renderEntries();
   }
 }
-function editEntry(index){
-  const e=entries[index];
-  document.getElementById("dateWorked").value=e.rawDate;
-  document.getElementById("branch").value=e.branch;
-  document.getElementById("timeIn").value=e.timeIn;
-  document.getElementById("timeOut").value=e.timeOut;
-  editIndex=index;
-  document.getElementById("timesheetForm").querySelector("button").textContent="Update Entry";
-}
 
 // =====================
-// Add/Edit/Delete Notes
+// Edit / Delete Notes
 // =====================
-function deleteNote(index){
-  if(confirm("Delete this note?")){
-    notes.splice(index,1);
-    localStorage.setItem("notesEntries",JSON.stringify(notes));
+function editNote(idx) {
+  const n = notes[idx];
+  document.getElementById("noteText").value = n.text;
+  editNoteIndex = idx;
+  openModal("note");
+}
+
+function deleteNote(idx) {
+  if (confirm("Delete this note?")) {
+    notes.splice(idx,1);
+    saveNotes();
     renderNotes();
   }
 }
-function editNote(index){
-  const n=notes[index];
-  document.getElementById("noteContent").value=n.content;
-  editNoteIndex=index;
-  document.getElementById("noteForm").querySelector("button").textContent="Update Note";
+
+// =====================
+// Modals
+// =====================
+function openModal(type) {
+  document.getElementById(type+"Modal").style.display = "block";
+}
+function closeModal(type) {
+  document.getElementById(type+"Modal").style.display = "none";
 }
 
 // =====================
 // Event Listeners
 // =====================
-document.getElementById("timesheetForm").addEventListener("submit",e=>{
+
+// Timesheet FAB
+document.getElementById("addEntryBtn").addEventListener("click",()=>openModal("entry"));
+document.getElementById("closeEntry").addEventListener("click",()=>closeModal("entry"));
+
+// Notes FAB
+document.getElementById("addNoteBtn").addEventListener("click",()=>openModal("note"));
+document.getElementById("closeNote").addEventListener("click",()=>closeModal("note"));
+
+// Timesheet Form
+document.getElementById("timesheetForm").addEventListener("submit", e=>{
   e.preventDefault();
-  const date=document.getElementById("dateWorked").value;
-  const branch=document.getElementById("branch").value;
-  const timeIn=document.getElementById("timeIn").value;
-  const timeOut=document.getElementById("timeOut").value;
-  const total=calculateTotalTime(timeIn,timeOut);
-  const pay=calculateEarnings(total.decimal);
-  const formatted=formatDate(date);
-  const entry={
+  const date = document.getElementById("dateWorked").value;
+  const branch = document.getElementById("branch").value;
+  const timeIn = document.getElementById("timeIn").value;
+  const timeOut = document.getElementById("timeOut").value;
+
+  const total = calculateTotalTime(timeIn,timeOut);
+  const pay = calculateEarnings(total.decimal);
+  const formatted = formatDate(date);
+
+  const entry = {
     rawDate: date,
     displayDate: formatted.display,
     day: formatted.day,
-    month: new Date(date).toLocaleDateString("en-US",{month:"long",year:"numeric"}),
     branch,
     timeIn,
     timeOut,
@@ -191,86 +209,72 @@ document.getElementById("timesheetForm").addEventListener("submit",e=>{
     net: pay.net.toFixed(2),
     cpf: pay.cpf.toFixed(2)
   };
-  if(editIndex===null){
-    entries.push(entry);
-  }else{
-    entries[editIndex]=entry;
+
+  if(editIndex!==null){
+    entries[editIndex] = entry;
     editIndex=null;
-    document.getElementById("timesheetForm").querySelector("button").textContent="Add Entry";
+  } else {
+    entries.push(entry);
   }
-  localStorage.setItem("timesheetEntries",JSON.stringify(entries));
+
+  saveEntries();
+  updateDashboard();
   renderEntries();
+  closeModal("entry");
   e.target.reset();
 });
 
-document.getElementById("noteForm").addEventListener("submit",e=>{
+// Notes Form
+document.getElementById("noteForm").addEventListener("submit", e=>{
   e.preventDefault();
-  const content=document.getElementById("noteContent").value;
-  if(window.editNoteIndex!=null){
-    notes[editNoteIndex].content=content;
+  const text = document.getElementById("noteText").value;
+  if(editNoteIndex!==null){
+    notes[editNoteIndex].text = text;
     editNoteIndex=null;
-    document.getElementById("noteForm").querySelector("button").textContent="Save Note";
-  }else{
-    notes.push({content});
+  } else {
+    notes.push({ text });
   }
-  localStorage.setItem("notesEntries",JSON.stringify(notes));
+  saveNotes();
   renderNotes();
+  closeModal("note");
   e.target.reset();
 });
 
+// Clear all timesheets
 document.getElementById("clearAll").addEventListener("click",()=>{
-  if(confirm("Delete all entries?")){
+  if(confirm("Delete all timesheet entries?")){
     entries=[];
-    localStorage.setItem("timesheetEntries",JSON.stringify(entries));
+    saveEntries();
+    updateDashboard();
     renderEntries();
   }
 });
 
-// =====================
-// Tab Switching
-// =====================
-const tabTimesheet=document.getElementById("tabTimesheet");
-const tabNotes=document.getElementById("tabNotes");
-const timesheetSection=document.getElementById("timesheetSection");
-const notesSection=document.getElementById("notesSection");
-
-tabTimesheet.addEventListener("click",()=>{
-  tabTimesheet.classList.add("active");
-  tabNotes.classList.remove("active");
-  timesheetSection.style.display="block";
-  notesSection.style.display="none";
+// Bottom Navigation
+document.getElementById("tabTimesheet").addEventListener("click",()=>{
+  document.getElementById("entries").style.display = "block";
+  document.getElementById("notes").style.display = "none";
+  document.getElementById("tabTimesheet").classList.add("active");
+  document.getElementById("tabNotes").classList.remove("active");
 });
 
-tabNotes.addEventListener("click",()=>{
-  tabNotes.classList.add("active");
-  tabTimesheet.classList.remove("active");
-  notesSection.style.display="block";
-  timesheetSection.style.display="none";
+document.getElementById("tabNotes").addEventListener("click",()=>{
+  document.getElementById("entries").style.display = "none";
+  document.getElementById("notes").style.display = "block";
+  document.getElementById("tabNotes").classList.add("active");
+  document.getElementById("tabTimesheet").classList.remove("active");
 });
 
-// =====================
-// Auto-resize textarea
-// =====================
-document.querySelectorAll(".auto-resize").forEach(area=>{
-  area.addEventListener("input",()=>{area.style.height="auto";area.style.height=area.scrollHeight+"px";});
+// Close modal on outside click
+window.addEventListener("click", e=>{
+  if(e.target.classList.contains("modal")){
+    e.target.style.display="none";
+  }
 });
 
 // =====================
-// Floating buttons & modals
+// Initial Render
 // =====================
-const fab=document.getElementById("fab");
-const fabNotes=document.getElementById("fabNotes");
-const entryModal=document.getElementById("entryModal");
-const noteModal=document.getElementById("noteModal");
-document.querySelectorAll(".modal .close").forEach(el=>el.addEventListener("click",()=>el.parentElement.parentElement.style.display="none"));
-
-fab.addEventListener("click",()=>{entryModal.style.display="block";});
-fabNotes.addEventListener("click",()=>{noteModal.style.display="block";});
-
-let editNoteIndex=null;
-
-// =====================
-// Initial render
-// =====================
+updateDashboard();
 renderEntries();
 renderNotes();
