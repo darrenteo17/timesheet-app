@@ -1,38 +1,23 @@
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("./sw.js")
-    .then(() => console.log("Service Worker registered"))
-    .catch(err => console.log("Service Worker failed:", err));
-}
-
 // =====================
 // Constants
 // =====================
 const HOURLY_RATE = 11;
-const CPF_DEDUCTION = 0.20;
-const CPF_EMPLOYER = 0.37;
+const CPF_DEDUCTION = 0.20; // Employee deduction
+const CPF_EMPLOYER = 0.37;   // Employer CPF
+
+// =====================
+// Track edit state
+// =====================
+let editIndex = null; // null = adding new entry, number = editing
 
 // =====================
 // Load saved entries
 // =====================
-let editIndex = null; // null means adding new entry, number means editing
-
 let entries = JSON.parse(localStorage.getItem("timesheetEntries")) || [];
 
 // =====================
 // Helper Functions
 // =====================
-function editEntry(index) {
-  const entry = entries[index];
-  document.getElementById("dateWorked").value = entry.date;
-  document.getElementById("branch").value = entry.branch;
-  document.getElementById("timeIn").value = entry.timeIn;
-  document.getElementById("timeOut").value = entry.timeOut;
-
-  editIndex = index;
-  document.getElementById("timesheetForm").querySelector("button").textContent = "Update Entry";
-}
-
 function getDayWorked(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-US", { weekday: "long" });
 }
@@ -95,12 +80,23 @@ function renderEntries() {
 }
 
 function deleteEntry(index) {
-  entries.splice(index, 1);
-  saveEntries();
-  renderEntries();
+  if (confirm("Are you sure you want to delete this entry?")) {
+    entries.splice(index, 1);
+    saveEntries();
+    renderEntries();
+  }
 }
 
+function editEntry(index) {
+  const entry = entries[index];
+  document.getElementById("dateWorked").value = entry.date;
+  document.getElementById("branch").value = entry.branch;
+  document.getElementById("timeIn").value = entry.timeIn;
+  document.getElementById("timeOut").value = entry.timeOut;
 
+  editIndex = index;
+  document.getElementById("timesheetForm").querySelector("button").textContent = "Update Entry";
+}
 
 // =====================
 // Form submit
@@ -108,7 +104,7 @@ function deleteEntry(index) {
 document.getElementById("timesheetForm").addEventListener("submit", e => {
   e.preventDefault();
 
-  const date = dateWorked.value;
+  const date = document.getElementById("dateWorked").value;
   const branch = document.getElementById("branch").value;
   const timeIn = document.getElementById("timeIn").value;
   const timeOut = document.getElementById("timeOut").value;
@@ -129,32 +125,41 @@ document.getElementById("timesheetForm").addEventListener("submit", e => {
   };
 
   if (editIndex === null) {
-  // Adding new entry
-  entries.push(entry);
-} else {
-  // Editing existing entry
-  entries[editIndex] = entry;
-  editIndex = null;
-  document.getElementById("timesheetForm").querySelector("button").textContent = "Add Entry";
-}
+    // Add new entry
+    entries.push(entry);
+  } else {
+    // Update existing entry
+    entries[editIndex] = entry;
+    editIndex = null;
+    document.getElementById("timesheetForm").querySelector("button").textContent = "Add Entry";
+  }
 
-saveEntries();
-renderEntries();
-e.target.reset();
-
+  saveEntries();
+  renderEntries();
+  e.target.reset();
 });
 
 // =====================
-// Clear all
+// Clear all entries
 // =====================
 document.getElementById("clearAll").addEventListener("click", () => {
-  if (confirm("Delete all entries?")) {
+  if (confirm("Are you sure you want to delete all entries?")) {
     entries = [];
     saveEntries();
     renderEntries();
   }
 });
 
-// Initial render
-renderEntries();
+// =====================
+// Register Service Worker (PWA)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("./sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.log("Service Worker failed:", err));
+}
 
+// =====================
+// Initial render
+// =====================
+renderEntries();
