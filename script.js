@@ -8,7 +8,7 @@ const CPF_EMPLOYER = 0.37;   // Employer CPF
 // =====================
 // Track edit state
 // =====================
-let editIndex = null; // null = adding new entry, number = editing
+let editIndex = null;
 
 // =====================
 // Load saved entries
@@ -53,12 +53,30 @@ function saveEntries() {
   localStorage.setItem("timesheetEntries", JSON.stringify(entries));
 }
 
+function updateDashboard() {
+  let totalHours = 0, totalGross = 0, totalNet = 0, totalCPF = 0;
+
+  entries.forEach(e => {
+    const h = parseFloat(e.hours.split("hrs")[0]) + parseFloat(e.hours.split(" ")[1].replace("mins",""))/60;
+    totalHours += h;
+    totalGross += parseFloat(e.gross);
+    totalNet += parseFloat(e.net);
+    totalCPF += parseFloat(e.cpf);
+  });
+
+  document.getElementById("totalHours").textContent = totalHours.toFixed(2);
+  document.getElementById("totalGross").textContent = totalGross.toFixed(2);
+  document.getElementById("totalNet").textContent = totalNet.toFixed(2);
+  document.getElementById("totalCPF").textContent = totalCPF.toFixed(2);
+}
+
 function renderEntries() {
   const container = document.getElementById("entries");
   container.innerHTML = "";
 
   if (entries.length === 0) {
     container.innerHTML = "<p>No entries yet.</p>";
+    updateDashboard();
     return;
   }
 
@@ -77,6 +95,8 @@ function renderEntries() {
       </div>
     `;
   });
+
+  updateDashboard();
 }
 
 function deleteEntry(index) {
@@ -125,10 +145,8 @@ document.getElementById("timesheetForm").addEventListener("submit", e => {
   };
 
   if (editIndex === null) {
-    // Add new entry
     entries.push(entry);
   } else {
-    // Update existing entry
     entries[editIndex] = entry;
     editIndex = null;
     document.getElementById("timesheetForm").querySelector("button").textContent = "Add Entry";
