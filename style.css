@@ -147,6 +147,15 @@ form button:hover {
   background-color: #5a6268;
 }
 
+/* Month headings */
+#entries h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #17a2b8;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
 /* Headings */
 h2 {
   margin-bottom: 10px;
@@ -168,15 +177,7 @@ h2 {
     font-size: 0.85rem;
   }
 
-  /* Month headings */
   #entries h3 {
-    margin-top: 25px;
-    margin-bottom: 10px;
-    color: #17a2b8;
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1rem;
   }
-
-  
 }
-
