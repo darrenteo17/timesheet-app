@@ -26,6 +26,18 @@
 
   <!-- Timesheet Section -->
   <section id="timesheetSection">
+    <form id="timesheetForm" class="floating-form">
+      <input type="date" id="dateWorked" required>
+      <select id="branch">
+        <option value="Buangkok">Buangkok</option>
+        <option value="Ang Mo Kio">Ang Mo Kio</option>
+        <option value="Fernvale">Fernvale</option>
+      </select>
+      <input type="time" id="timeIn" required>
+      <input type="time" id="timeOut" required>
+      <button type="submit">Add Entry</button>
+    </form>
+
     <div id="entries"></div>
   </section>
 
