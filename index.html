@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AGrader</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
 
@@ -12,8 +14,9 @@
   <h1>AGrader</h1>
 </header>
 
-<!-- DASHBOARD -->
 <main>
+
+  <!-- DASHBOARD -->
   <div class="dashboard">
     <div class="dashboard-card">
       <p>Total Hours: <span id="totalHours">0</span></p>
@@ -96,5 +99,14 @@
 </div>
 
 <script src="script.js"></script>
+
+<!-- REGISTER SERVICE WORKER -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log('Service Worker Registered'))
+    .catch(err => console.log('SW Registration Failed:', err));
+}
+</script>
 </body>
 </html>
