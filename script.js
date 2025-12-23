@@ -1,0 +1,158 @@
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("./sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.log("Service Worker failed:", err));
+}
+
+// =====================
+// Constants
+// =====================
+const HOURLY_RATE = 11;
+const CPF_DEDUCTION = 0.20;
+const CPF_EMPLOYER = 0.37;
+
+// =====================
+// Load saved entries
+// =====================
+let editIndex = null; // null means adding new entry, number means editing
+
+let entries = JSON.parse(localStorage.getItem("timesheetEntries")) || [];
+
+// =====================
+// Helper Functions
+// =====================
+function editEntry(index) {
+  const entry = entries[index];
+  document.getElementById("dateWorked").value = entry.date;
+  document.getElementById("branch").value = entry.branch;
+  document.getElementById("timeIn").value = entry.timeIn;
+  document.getElementById("timeOut").value = entry.timeOut;
+
+  editIndex = index;
+  document.getElementById("timesheetForm").querySelector("button").textContent = "Update Entry";
+}
+
+function getDayWorked(dateStr) {
+  return new Date(dateStr).toLocaleDateString("en-US", { weekday: "long" });
+}
+
+function timeToMinutes(timeStr) {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function calculateTotalTime(timeIn, timeOut) {
+  const diff = timeToMinutes(timeOut) - timeToMinutes(timeIn);
+  const hours = Math.floor(diff / 60);
+  const minutes = diff % 60;
+  return {
+    text: `${hours}hrs ${minutes}mins`,
+    decimal: hours + minutes / 60
+  };
+}
+
+function calculateEarnings(decimalHours) {
+  const gross = decimalHours * HOURLY_RATE;
+  return {
+    gross,
+    net: gross - gross * CPF_DEDUCTION,
+    cpf: gross * CPF_EMPLOYER
+  };
+}
+
+// =====================
+// Save + Render
+// =====================
+function saveEntries() {
+  localStorage.setItem("timesheetEntries", JSON.stringify(entries));
+}
+
+function renderEntries() {
+  const container = document.getElementById("entries");
+  container.innerHTML = "";
+
+  if (entries.length === 0) {
+    container.innerHTML = "<p>No entries yet.</p>";
+    return;
+  }
+
+  entries.forEach((e, i) => {
+    container.innerHTML += `
+      <div style="background:#f4f4f4;padding:10px;margin:10px 0">
+        <p><strong>${e.date}</strong> (${e.day})</p>
+        <p>${e.branch}</p>
+        <p>${e.timeIn} – ${e.timeOut}</p>
+        <p>${e.hours}</p>
+        <p>Gross: $${e.gross}</p>
+        <button onclick="editEntry(${i})">Edit</button>
+        <button onclick="deleteEntry(${i})">Delete</button>
+
+      </div>
+    `;
+  });
+}
+
+function deleteEntry(index) {
+  entries.splice(index, 1);
+  saveEntries();
+  renderEntries();
+}
+
+
+
+// =====================
+// Form submit
+// =====================
+document.getElementById("timesheetForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const date = dateWorked.value;
+  const branch = document.getElementById("branch").value;
+  const timeIn = document.getElementById("timeIn").value;
+  const timeOut = document.getElementById("timeOut").value;
+
+  const total = calculateTotalTime(timeIn, timeOut);
+  const pay = calculateEarnings(total.decimal);
+
+  const entry = {
+    date,
+    day: getDayWorked(date),
+    branch,
+    timeIn,
+    timeOut,
+    hours: total.text,
+    gross: pay.gross.toFixed(2),
+    net: pay.net.toFixed(2),
+    cpf: pay.cpf.toFixed(2)
+  };
+
+  if (editIndex === null) {
+  // Adding new entry
+  entries.push(entry);
+} else {
+  // Editing existing entry
+  entries[editIndex] = entry;
+  editIndex = null;
+  document.getElementById("timesheetForm").querySelector("button").textContent = "Add Entry";
+}
+
+saveEntries();
+renderEntries();
+e.target.reset();
+
+});
+
+// =====================
+// Clear all
+// =====================
+document.getElementById("clearAll").addEventListener("click", () => {
+  if (confirm("Delete all entries?")) {
+    entries = [];
+    saveEntries();
+    renderEntries();
+  }
+});
+
+// Initial render
+renderEntries();
