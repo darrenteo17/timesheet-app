@@ -6,107 +6,95 @@
   <title>AGrader</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
+  <header>AGrader</header>
 
-<header>
-  <h1>AGrader</h1>
-</header>
-
-<main>
-
-  <!-- DASHBOARD -->
-  <div class="dashboard">
-    <div class="dashboard-card">
-      <p>Total Hours: <span id="totalHours">0</span></p>
+  <main>
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <div class="dashboard-card">
+        <p>Total Hours</p>
+        <h3 id="totalHours">0</h3>
+      </div>
+      <div class="dashboard-card">
+        <p>Total Gross</p>
+        <h3 id="totalGross">0</h3>
+      </div>
+      <div class="dashboard-card">
+        <p>Total Net</p>
+        <h3 id="totalNet">0</h3>
+      </div>
+      <div class="dashboard-card">
+        <p>Total CPF</p>
+        <h3 id="totalCPF">0</h3>
+      </div>
     </div>
-    <div class="dashboard-card">
-      <p>Total Gross: $<span id="totalGross">0</span></p>
-    </div>
-    <div class="dashboard-card">
-      <p>Total Net: $<span id="totalNet">0</span></p>
-    </div>
-    <div class="dashboard-card">
-      <p>Total CPF: $<span id="totalCPF">0</span></p>
-    </div>
-  </div>
 
-  <button class="clear-btn" id="clearAll">Clear All Entries</button>
+    <button class="clear-btn" id="clearAll">Clear All Entries</button>
 
-  <!-- TABS -->
+    <!-- Entries -->
+    <div id="entries"></div>
+
+    <!-- Notes -->
+    <div id="notes" style="display:none;"></div>
+  </main>
+
+  <!-- Bottom Navigation -->
   <div class="bottom-nav">
     <button id="tabTimesheet" class="active">Timesheet</button>
     <button id="tabNotes">Notes</button>
   </div>
 
-  <!-- TIMESHEET SECTION -->
-  <section id="timesheetSection">
-    <div id="entries"></div>
-    <button class="fab" id="fab">+</button>
-  </section>
+  <!-- Floating Buttons -->
+  <div class="fab" id="addEntryBtn">+</div>
+  <div class="fab" id="addNoteBtn" style="bottom: 90px;">📝</div>
 
-  <!-- NOTES SECTION -->
-  <section id="notesSection" style="display:none;">
-    <div id="notesList"></div>
-    <button class="fab" id="fabNotes">+</button>
-  </section>
-</main>
-
-<!-- TIMESHEET MODAL -->
-<div id="entryModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <form id="timesheetForm">
-      <div class="input-group">
-        <input type="date" id="dateWorked" required>
-        <label>Date Worked</label>
-      </div>
-      <div class="input-group">
-        <select id="branch" required>
-          <option value="">Select Branch</option>
-          <option value="Buangkok">Buangkok</option>
-          <option value="Ang Mo Kio">Ang Mo Kio</option>
-          <option value="Fernvale">Fernvale</option>
-        </select>
-        <label>Branch</label>
-      </div>
-      <div class="input-group">
-        <input type="time" id="timeIn" required>
-        <label>Time In</label>
-      </div>
-      <div class="input-group">
-        <input type="time" id="timeOut" required>
-        <label>Time Out</label>
-      </div>
-      <button type="submit">Add Entry</button>
-    </form>
+  <!-- Timesheet Modal -->
+  <div id="entryModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeEntry">&times;</span>
+      <form id="timesheetForm">
+        <div class="input-group">
+          <label for="dateWorked">Date Worked</label>
+          <input type="date" id="dateWorked" required>
+        </div>
+        <div class="input-group">
+          <label for="branch">Branch</label>
+          <select id="branch" required>
+            <option value="">Select Branch</option>
+            <option value="Buangkok">Buangkok</option>
+            <option value="Ang Mo Kio">Ang Mo Kio</option>
+            <option value="Fernvale">Fernvale</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="timeIn">Time In</label>
+          <input type="time" id="timeIn" required>
+        </div>
+        <div class="input-group">
+          <label for="timeOut">Time Out</label>
+          <input type="time" id="timeOut" required>
+        </div>
+        <button type="submit">Add Entry</button>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- NOTES MODAL -->
-<div id="noteModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <form id="noteForm">
-      <div class="input-group">
-        <textarea id="noteContent" class="auto-resize" placeholder="Write your note..." required></textarea>
-        <label>Note</label>
-      </div>
-      <button type="submit">Save Note</button>
-    </form>
+  <!-- Notes Modal -->
+  <div id="noteModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeNote">&times;</span>
+      <form id="noteForm">
+        <div class="input-group">
+          <label for="noteText">Note</label>
+          <textarea id="noteText" required></textarea>
+        </div>
+        <button type="submit">Add Note</button>
+      </form>
+    </div>
   </div>
-</div>
 
-<script src="script.js"></script>
-
-<!-- REGISTER SERVICE WORKER -->
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log('Service Worker Registered'))
-    .catch(err => console.log('SW Registration Failed:', err));
-}
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
