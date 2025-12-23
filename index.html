@@ -3,77 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timesheet & Notes</title>
+  <title>Timesheet App</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-  <h1>Work Tracker</h1>
+  <h1>Timesheet App</h1>
 </header>
 
+<!-- DASHBOARD -->
 <main>
-  <!-- Dashboard -->
-  <div id="dashboard" class="dashboard">
+  <div class="dashboard">
     <div class="dashboard-card">
       <p>Total Hours: <span id="totalHours">0</span></p>
+    </div>
+    <div class="dashboard-card">
       <p>Total Gross: $<span id="totalGross">0</span></p>
+    </div>
+    <div class="dashboard-card">
       <p>Total Net: $<span id="totalNet">0</span></p>
+    </div>
+    <div class="dashboard-card">
       <p>Total CPF: $<span id="totalCPF">0</span></p>
     </div>
-    <button id="clearAll" class="clear-btn">Clear All Entries</button>
   </div>
 
-  <!-- Timesheet Section -->
-  <section id="timesheetSection">
-    <form id="timesheetForm" class="floating-form">
-      <input type="date" id="dateWorked" required>
-      <select id="branch">
-        <option value="Buangkok">Buangkok</option>
-        <option value="Ang Mo Kio">Ang Mo Kio</option>
-        <option value="Fernvale">Fernvale</option>
-      </select>
-      <input type="time" id="timeIn" required>
-      <input type="time" id="timeOut" required>
-      <button type="submit">Add Entry</button>
-    </form>
+  <button class="clear-btn" id="clearAll">Clear All Entries</button>
 
+  <!-- TABS -->
+  <div class="bottom-nav">
+    <button id="tabTimesheet" class="active">Timesheet</button>
+    <button id="tabNotes">Notes</button>
+  </div>
+
+  <!-- TIMESHEET SECTION -->
+  <section id="timesheetSection">
     <div id="entries"></div>
+    <button class="fab" id="fab">+</button>
   </section>
 
-  <!-- Notes Section -->
+  <!-- NOTES SECTION -->
   <section id="notesSection" style="display:none;">
-    <div id="notesContainer"></div>
-
-    <!-- Floating Action Button for Notes -->
-    <button id="fabNotes" class="fab">+</button>
-
-    <!-- Modal for Notes -->
-    <div id="noteModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modalTitle">Add Note</h2>
-        <form id="noteForm">
-          <div class="input-group">
-            <input type="text" id="noteTitle" placeholder=" " required>
-            <label for="noteTitle">Title</label>
-          </div>
-          <div class="input-group">
-            <textarea id="noteContent" placeholder=" " rows="4" required></textarea>
-            <label for="noteContent">Content</label>
-          </div>
-          <button type="submit">Save Note</button>
-        </form>
-      </div>
-    </div>
+    <div id="notesList"></div>
+    <button class="fab" id="fabNotes">+</button>
   </section>
 </main>
 
-<!-- Bottom Tab Navigation -->
-<nav class="bottom-nav">
-  <button id="tabTimesheet" class="active">Timesheet</button>
-  <button id="tabNotes">Notes</button>
-</nav>
+<!-- TIMESHEET MODAL -->
+<div id="entryModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="timesheetForm">
+      <div class="input-group">
+        <input type="date" id="dateWorked" required>
+        <label>Date Worked</label>
+      </div>
+      <div class="input-group">
+        <select id="branch" required>
+          <option value="">Select Branch</option>
+          <option value="Buangkok">Buangkok</option>
+          <option value="Ang Mo Kio">Ang Mo Kio</option>
+          <option value="Fernvale">Fernvale</option>
+        </select>
+        <label>Branch</label>
+      </div>
+      <div class="input-group">
+        <input type="time" id="timeIn" required>
+        <label>Time In</label>
+      </div>
+      <div class="input-group">
+        <input type="time" id="timeOut" required>
+        <label>Time Out</label>
+      </div>
+      <button type="submit">Add Entry</button>
+    </form>
+  </div>
+</div>
+
+<!-- NOTES MODAL -->
+<div id="noteModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="noteForm">
+      <div class="input-group">
+        <textarea id="noteContent" class="auto-resize" placeholder="Write your note..." required></textarea>
+        <label>Note</label>
+      </div>
+      <button type="submit">Save Note</button>
+    </form>
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
