@@ -80,24 +80,36 @@ function renderEntries() {
     return;
   }
 
-  entries.forEach((e, i) => {
-    container.innerHTML += `
-      <div class="entry-card">
-        <p><strong>${e.date}</strong> (${e.day})</p>
-        <p><strong>Branch:</strong> ${e.branch}</p>
-        <p><strong>Time:</strong> ${e.timeIn} – ${e.timeOut}</p>
-        <p><strong>Total Hours:</strong> ${e.hours}</p>
-        <p><strong>Gross:</strong> $${e.gross} | <strong>Net:</strong> $${e.net} | <strong>CPF:</strong> $${e.cpf}</p>
-        <div class="entry-buttons">
-          <button onclick="editEntry(${i})">Edit</button>
-          <button onclick="deleteEntry(${i})">Delete</button>
-        </div>
-      </div>
-    `;
+  // Group entries by month
+  const months = {};
+  entries.forEach(e => {
+    if (!months[e.month]) months[e.month] = [];
+    months[e.month].push(e);
   });
+
+  // Render each month section
+  for (let month in months) {
+    container.innerHTML += `<h3>${month}</h3>`;
+    months[month].forEach((e, i) => {
+      container.innerHTML += `
+        <div class="entry-card">
+          <p><strong>${e.date}</strong> (${e.day})</p>
+          <p><strong>Branch:</strong> ${e.branch}</p>
+          <p><strong>Time:</strong> ${e.timeIn} – ${e.timeOut}</p>
+          <p><strong>Total Hours:</strong> ${e.hours}</p>
+          <p><strong>Gross:</strong> $${e.gross} | <strong>Net:</strong> $${e.net} | <strong>CPF:</strong> $${e.cpf}</p>
+          <div class="entry-buttons">
+            <button onclick="editEntry(${entries.indexOf(e)})">Edit</button>
+            <button onclick="deleteEntry(${entries.indexOf(e)})">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  }
 
   updateDashboard();
 }
+
 
 function deleteEntry(index) {
   if (confirm("Are you sure you want to delete this entry?")) {
@@ -135,6 +147,7 @@ document.getElementById("timesheetForm").addEventListener("submit", e => {
   const entry = {
     date,
     day: getDayWorked(date),
+    month: new Date(date).toLocaleDateString("en-US", { month: "long", year: "numeric" }),
     branch,
     timeIn,
     timeOut,
@@ -143,6 +156,7 @@ document.getElementById("timesheetForm").addEventListener("submit", e => {
     net: pay.net.toFixed(2),
     cpf: pay.cpf.toFixed(2)
   };
+
 
   if (editIndex === null) {
     entries.push(entry);
@@ -181,3 +195,4 @@ if ("serviceWorker" in navigator) {
 // Initial render
 // =====================
 renderEntries();
+
