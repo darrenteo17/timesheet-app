@@ -91,7 +91,7 @@ function recalculateAllMonths() {
   });
 }
 
-// Initial calculation and sort on load
+// Initial calculation and sort on load (ascending date order so earlier dates appear on top)
 recalculateAllMonths();
 entries.sort((a, b) => {
   if (a.rawDate !== b.rawDate) return a.rawDate.localeCompare(b.rawDate);
@@ -148,16 +148,19 @@ function formatHours(decimalHours) {
 function populateMonthFilter() {
   const filter = document.getElementById("monthFilter");
   const currentValue = filter.value; 
-  const monthsSet = new Set(entries.map(e => e.month));
+  const monthsArr = [...new Set(entries.map(e => e.month))];
+  
+  // Sort months descending so the most recent months are automatically on top
+  monthsArr.sort((a, b) => new Date(b) - new Date(a));
   
   filter.innerHTML = '<option value="all">All Months</option>';
-  monthsSet.forEach(month => {
+  monthsArr.forEach(month => {
     const option = document.createElement("option");
     option.value = month;
     option.textContent = month;
     filter.appendChild(option);
   });
-  if (currentValue && monthsSet.has(currentValue)) filter.value = currentValue;
+  if (currentValue && monthsArr.includes(currentValue)) filter.value = currentValue;
 }
 
 function updateDashboard(entriesToUse = entries) {
