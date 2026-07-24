@@ -1,62 +1,140 @@
-/* ===========================
-   Modal & Form Inputs Fix
-=========================== */
-.modal-content {
-  background-color: var(--card-bg);
-  margin: 60px auto;
-  padding: 1.2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-  box-sizing: border-box; /* Ensures padding doesn't push width out */
-  overflow-x: hidden;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timesheet App</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- PWA Manifest & Theme Color for Mobile Home Screen Icon -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e90ff">
+</head>
+<body>
 
-.input-group {
-  position: relative;
-  margin-top: 1.2rem;
-  margin-bottom: 0.5rem;
-  width: 100%;
-}
+<header>
+  <h1>Timesheet</h1>
+  <div class="header-controls">
+    <input type="text" id="searchInput" placeholder="Search">
+    <select id="monthFilter"></select>
+    <button id="openStats" title="Statistics">📊</button>
+    <button id="toggleDarkMode" title="Toggle Dark Mode">🌙</button>
+    <button id="openSettings" title="Settings">⚙️</button>
+  </div>
+</header>
 
-.input-group input,
-.input-group select {
-  width: 100%;
-  height: 48px;
-  padding: 0.8rem 0.6rem 0.2rem 0.6rem;
-  font-size: 0.95rem;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  outline: none;
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  box-sizing: border-box; /* Forces the box to respect container width boundaries */
-}
+<main>
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+    <div class="dashboard-item"><p>Total Hours</p><p id="totalHours">0</p></div>
+    <div class="dashboard-item"><p>Total Gross</p><p>$<span id="totalGross">0</span></p></div>
+    <div class="dashboard-item"><p>Total Net</p><p>$<span id="totalNet">0</span></p></div>
+    <div class="dashboard-item"><p>Total CPF</p><p>$<span id="totalCPF">0</span></p></div>
+  </div>
 
-.input-group label {
-  position: absolute;
-  top: -0.5rem;
-  left: 0.6rem;
-  pointer-events: none;
-  font-size: 0.75rem;
-  color: #1e90ff;
-  background: var(--card-bg);
-  padding: 0 0.3rem;
-  z-index: 2;
-}
+  <!-- Clear All button -->
+  <div class="clear-container">
+    <button id="clearAll">Clear All</button>
+  </div>
 
-.modal-content form button[type="submit"] {
-  margin-top: 1rem;
-  background: #1e90ff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 6px;
-  width: 100%;
-  font-size: 1rem;
-  padding: 0.75rem;
-  border: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-  box-sizing: border-box;
-}
+  <div class="backup-container">
+    <button id="exportData">Backup</button>
+    <button id="importData">Restore</button>
+    <button id="exportCSV">CSV</button>
+    <input type="file" id="importFile" accept=".json" hidden>
+  </div>
+
+  <!-- Entries container -->
+  <div id="entries"></div>
+</main>
+
+<!-- Floating Action Button -->
+<button id="fab" class="fab">+</button>
+
+<!-- Modal for adding/editing entry -->
+<div id="entryModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeEntry">&times;</span>
+    <h2 id="modalTitle">Add Entry</h2>
+    <form id="timesheetForm">
+      <div class="input-group">
+        <label for="dateWorked">Date Worked</label>
+        <input type="date" id="dateWorked" required>
+      </div>
+
+      <div class="input-group">
+        <label for="branch">Branch</label>
+        <select id="branch" required>
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="timeIn">Time In</label>
+        <input type="time" id="timeIn" required>
+      </div>
+
+      <div class="input-group">
+        <label for="timeOut">Time Out</label>
+        <input type="time" id="timeOut" required>
+      </div>
+
+      <button type="submit">Add Entry</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for Settings -->
+<div id="settingsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeSettings">&times;</span>
+    <h2>Settings</h2>
+    <form id="settingsForm">
+      <div class="input-group">
+        <label for="setHourlyRate">Hourly Rate ($)</label>
+        <input type="number" id="setHourlyRate" step="0.5" required>
+      </div>
+      <div class="input-group">
+        <label for="setEmployeeCpf">Employee CPF Deduction (%)</label>
+        <input type="number" id="setEmployeeCpf" step="1" required>
+      </div>
+      <div class="input-group">
+        <label for="setEmployerCpf">Employer CPF Contribution (%)</label>
+        <input type="number" id="setEmployerCpf" step="1" required>
+      </div>
+      <div class="input-group">
+        <label for="setBranches">Branches (comma separated)</label>
+        <input type="text" id="setBranches" required>
+      </div>
+      <button type="submit">Save Settings</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for Statistics -->
+<div id="statsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeStats">&times;</span>
+    <h2>Statistics</h2>
+    <div id="statsContainer">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(err => console.log('Service Worker failed', err));
+    });
+  }
+</script>
+
+</body>
+</html>
