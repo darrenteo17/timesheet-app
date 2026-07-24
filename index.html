@@ -5,17 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Timesheet App</title>
   <link rel="stylesheet" href="style.css">
+  
+  <!-- PWA Manifest & Theme Color for Mobile Home Screen Icon -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e90ff">
 </head>
 <body>
 
 <header>
   <h1>Timesheet</h1>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <input type="text" id="searchInput" placeholder="Search..." style="padding: 0.4rem; border-radius: 4px; border: none; outline: none; width: 80px; font-size: 0.85rem;">
-    <select id="monthFilter" style="padding: 0.4rem; border-radius: 4px; border: none; outline: none;"></select>
-    <button id="openStats" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer;" title="Statistics">📊</button>
-    <button id="toggleDarkMode" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer;" title="Toggle Dark Mode">🌙</button>
-    <button id="openSettings" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: white;" title="Settings">⚙️</button>
+  <div style="display: flex; align-items: center; gap: 4px;">
+    <input type="text" id="searchInput" placeholder="Search..." style="padding: 0.3rem; border-radius: 4px; border: none; outline: none; width: 65px; font-size: 0.8rem;">
+    <select id="monthFilter" style="padding: 0.3rem; border-radius: 4px; border: none; outline: none; font-size: 0.8rem;"></select>
+    <button id="openStats" style="background: transparent; border: none; font-size: 1.1rem; cursor: pointer; padding: 2px;" title="Statistics">📊</button>
+    <button id="toggleDarkMode" style="background: transparent; border: none; font-size: 1.1rem; cursor: pointer; padding: 2px;" title="Toggle Dark Mode">🌙</button>
+    <button id="openSettings" style="background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: white; padding: 2px;" title="Settings">⚙️</button>
   </div>
 </header>
 
