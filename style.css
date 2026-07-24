@@ -1,140 +1,448 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timesheet App</title>
-  <link rel="stylesheet" href="style.css">
-  
-  <!-- PWA Manifest & Theme Color for Mobile Home Screen Icon -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e90ff">
-</head>
-<body>
+/* ===========================
+   Global & Theme Variables
+=========================== */
+:root {
+  --bg-color: #f4f4f4;
+  --text-color: #333;
+  --card-bg: #fff;
+  --header-bg: #1e90ff;
+  --dashboard-item-bg: #f0f8ff;
+  --border-color: #eee;
+  --input-bg: #fff;
+  --input-border: #ccc;
+  --modal-overlay: rgba(0,0,0,0.5);
+}
 
-<header>
-  <h1>Timesheet</h1>
-  <div class="header-controls">
-    <input type="text" id="searchInput" placeholder="Search">
-    <select id="monthFilter"></select>
-    <button id="openStats" title="Statistics">📊</button>
-    <button id="toggleDarkMode" title="Toggle Dark Mode">🌙</button>
-    <button id="openSettings" title="Settings">⚙️</button>
-  </div>
-</header>
+body.dark-mode {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --header-bg: #222;
+  --dashboard-item-bg: #2d2d2d;
+  --border-color: #444;
+  --input-bg: #333;
+  --input-border: #555;
+  --modal-overlay: rgba(0,0,0,0.8);
+}
 
-<main>
-  <!-- Dashboard -->
-  <div id="dashboard" class="dashboard">
-    <div class="dashboard-item"><p>Total Hours</p><p id="totalHours">0</p></div>
-    <div class="dashboard-item"><p>Total Gross</p><p>$<span id="totalGross">0</span></p></div>
-    <div class="dashboard-item"><p>Total Net</p><p>$<span id="totalNet">0</span></p></div>
-    <div class="dashboard-item"><p>Total CPF</p><p>$<span id="totalCPF">0</span></p></div>
-  </div>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-  <!-- Clear All button -->
-  <div class="clear-container">
-    <button id="clearAll">Clear All</button>
-  </div>
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
 
-  <div class="backup-container">
-    <button id="exportData">Backup</button>
-    <button id="importData">Restore</button>
-    <button id="exportCSV">CSV</button>
-    <input type="file" id="importFile" accept=".json" hidden>
-  </div>
+/* ===========================
+   Header
+=========================== */
+header {
+  background: var(--header-bg);
+  color: white;
+  padding: 1.2rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background-color 0.3s;
+}
 
-  <!-- Entries container -->
-  <div id="entries"></div>
-</main>
+header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
-<!-- Floating Action Button -->
-<button id="fab" class="fab">+</button>
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex-shrink: 1;
+}
 
-<!-- Modal for adding/editing entry -->
-<div id="entryModal" class="modal">
-  <div class="modal-content">
-    <span class="close" id="closeEntry">&times;</span>
-    <h2 id="modalTitle">Add Entry</h2>
-    <form id="timesheetForm">
-      <div class="input-group">
-        <label for="dateWorked">Date Worked</label>
-        <input type="date" id="dateWorked" required>
-      </div>
+header input[type="text"],
+header select {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  outline: none;
+}
 
-      <div class="input-group">
-        <label for="branch">Branch</label>
-        <select id="branch" required>
-          <!-- Populated dynamically -->
-        </select>
-      </div>
+header input#searchInput {
+  width: 75px;
+}
 
-      <div class="input-group">
-        <label for="timeIn">Time In</label>
-        <input type="time" id="timeIn" required>
-      </div>
+header select#monthFilter {
+  max-width: 105px;
+}
 
-      <div class="input-group">
-        <label for="timeOut">Time Out</label>
-        <input type="time" id="timeOut" required>
-      </div>
+header button {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 2px;
+  color: white;
+  line-height: 1;
+}
 
-      <button type="submit">Add Entry</button>
-    </form>
-  </div>
-</div>
+/* ===========================
+   Main
+=========================== */
+main {
+  padding: 1rem;
+}
 
-<!-- Modal for Settings -->
-<div id="settingsModal" class="modal">
-  <div class="modal-content">
-    <span class="close" id="closeSettings">&times;</span>
-    <h2>Settings</h2>
-    <form id="settingsForm">
-      <div class="input-group">
-        <label for="setHourlyRate">Hourly Rate ($)</label>
-        <input type="number" id="setHourlyRate" step="0.5" required>
-      </div>
-      <div class="input-group">
-        <label for="setEmployeeCpf">Employee CPF Deduction (%)</label>
-        <input type="number" id="setEmployeeCpf" step="1" required>
-      </div>
-      <div class="input-group">
-        <label for="setEmployerCpf">Employer CPF Contribution (%)</label>
-        <input type="number" id="setEmployerCpf" step="1" required>
-      </div>
-      <div class="input-group">
-        <label for="setBranches">Branches (comma separated)</label>
-        <input type="text" id="setBranches" required>
-      </div>
-      <button type="submit">Save Settings</button>
-    </form>
-  </div>
-</div>
+/* ===========================
+   Dashboard
+=========================== */
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: var(--card-bg);
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s;
+}
 
-<!-- Modal for Statistics -->
-<div id="statsModal" class="modal">
-  <div class="modal-content">
-    <span class="close" id="closeStats">&times;</span>
-    <h2>Statistics</h2>
-    <div id="statsContainer">
-      <!-- Populated dynamically -->
-    </div>
-  </div>
-</div>
+.dashboard-item {
+  flex: 1 1 45%;
+  background: var(--dashboard-item-bg);
+  text-align: center;
+  padding: 0.3rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  font-size: 0.85rem;
+  transition: background-color 0.3s;
+}
 
-<!-- Toast Notification -->
-<div id="toast" class="toast"></div>
+/* ===========================
+   Buttons
+=========================== */
+.clear-container {
+  margin-bottom: 0.5rem;
+}
 
-<script src="script.js"></script>
+#clearAll {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  transition: box-shadow 0.2s ease;
+}
 
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .catch(err => console.log('Service Worker failed', err));
-    });
-  }
-</script>
+#clearAll:active {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
+}
 
-</body>
-</html>
+.backup-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.backup-container button {
+  flex: 1;
+  background: var(--card-bg);
+  color: #1e90ff;
+  border: 1px solid #1e90ff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.backup-container button:hover {
+  background: #1e90ff;
+  color: white;
+}
+
+/* ===========================
+   Month cards
+=========================== */
+.month-card {
+  background: var(--card-bg);
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
+
+.month-header {
+  background: #1e90ff;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+body.dark-mode .month-header {
+  background: #2d2d2d;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.entry-card {
+  padding: 0.4rem 0.8rem;
+  border-top: 1px solid var(--border-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 0.85rem;
+}
+
+.entry-buttons button {
+  margin-right: 0.4rem;
+  background: #1e90ff;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  font-size: 0.75rem;
+}
+
+.entry-buttons button:last-child {
+  background: #ff4d4f;
+}
+
+/* ===========================
+   Floating Action Button
+=========================== */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: #1e90ff;
+  color: white;
+  font-size: 32px;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* ===========================
+   Modal & Form Inputs
+=========================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: var(--modal-overlay);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: block;
+  opacity: 1;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  margin: 60px auto;
+  padding: 1.2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  transform: translateY(-50px);
+  transition: transform 0.3s ease, background-color 0.3s;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--text-color);
+}
+
+.input-group {
+  margin-bottom: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  height: 46px;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  outline: none;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  box-sizing: border-box;
+}
+
+.modal-content form button[type="submit"] {
+  margin-top: 0.5rem;
+  background: #1e90ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+.month-card .entry-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.month-card .entry-container.show {
+  max-height: 10000px;
+  opacity: 1;
+}
+
+/* ===========================
+   Statistics Modal Styling
+=========================== */
+.stat-box {
+  background: var(--dashboard-item-bg);
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+.stat-box h3 { margin: 0; font-size: 0.85rem; color: #888; }
+.stat-box p { margin: 0.2rem 0 0; font-weight: bold; font-size: 1.1rem; color: #1e90ff; }
+.stat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+}
+.stat-list li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.stat-list li:last-child { border-bottom: none; }
+
+/* CSS Bar Chart */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 150px;
+  padding-top: 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+.chart-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  width: 30px;
+}
+.chart-bar {
+  width: 100%;
+  background: #1e90ff;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.5s ease;
+}
+.chart-label {
+  font-size: 0.65rem;
+  margin-top: 5px;
+  color: #888;
+}
+
+/* ===========================
+   Toast Notification
+=========================== */
+.toast {
+  visibility: hidden;
+  min-width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px 20px;
+  position: fixed;
+  z-index: 2000;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease, bottom 0.3s ease, visibility 0.3s ease;
+}
+
+body.dark-mode .toast {
+  background-color: #1e90ff;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 40px;
+}
