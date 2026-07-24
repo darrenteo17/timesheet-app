@@ -58,25 +58,25 @@
     <h2 id="modalTitle">Add Entry</h2>
     <form id="timesheetForm">
       <div class="input-group">
+        <input type="date" id="dateWorked" placeholder=" " required>
         <label for="dateWorked">Date Worked</label>
-        <input type="date" id="dateWorked" required>
       </div>
 
       <div class="input-group">
-        <label for="branch">Branch</label>
         <select id="branch" required>
           <!-- Populated dynamically -->
         </select>
+        <label for="branch">Branch</label>
       </div>
 
       <div class="input-group">
+        <input type="time" id="timeIn" placeholder=" " required>
         <label for="timeIn">Time In</label>
-        <input type="time" id="timeIn" required>
       </div>
 
       <div class="input-group">
+        <input type="time" id="timeOut" placeholder=" " required>
         <label for="timeOut">Time Out</label>
-        <input type="time" id="timeOut" required>
       </div>
 
       <button type="submit">Add Entry</button>
@@ -91,20 +91,20 @@
     <h2>Settings</h2>
     <form id="settingsForm">
       <div class="input-group">
+        <input type="number" id="setHourlyRate" step="0.5" placeholder=" " required>
         <label for="setHourlyRate">Hourly Rate ($)</label>
-        <input type="number" id="setHourlyRate" step="0.5" required>
       </div>
       <div class="input-group">
+        <input type="number" id="setEmployeeCpf" step="1" placeholder=" " required>
         <label for="setEmployeeCpf">Employee CPF Deduction (%)</label>
-        <input type="number" id="setEmployeeCpf" step="1" required>
       </div>
       <div class="input-group">
+        <input type="number" id="setEmployerCpf" step="1" placeholder=" " required>
         <label for="setEmployerCpf">Employer CPF Contribution (%)</label>
-        <input type="number" id="setEmployerCpf" step="1" required>
       </div>
       <div class="input-group">
+        <input type="text" id="setBranches" placeholder=" " required>
         <label for="setBranches">Branches (comma separated)</label>
-        <input type="text" id="setBranches" required>
       </div>
       <button type="submit">Save Settings</button>
     </form>
