@@ -46,7 +46,7 @@ body {
 header {
   background: var(--header-bg);
   color: white;
-  padding: 0.85rem 1rem; /* Taller vertical padding */
+  padding: 1.2rem 1rem; /* Taller header banner downwards */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,16 +56,47 @@ header {
 }
 
 header h1 {
-  font-size: 1.1rem;
+  font-size: 1.4rem; /* Larger header title */
   margin: 0;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-header input, header select {
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+header input[type="text"],
+header select {
   background-color: var(--input-bg);
   color: var(--text-color);
   border: 1px solid var(--input-border);
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  outline: none;
+}
+
+header input#searchInput {
+  width: 75px;
+}
+
+header select#monthFilter {
+  max-width: 105px;
+}
+
+header button {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem; /* Larger icon buttons */
+  cursor: pointer;
+  padding: 2px;
+  color: white;
+  line-height: 1;
 }
 
 /* ===========================
