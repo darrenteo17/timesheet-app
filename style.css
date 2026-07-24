@@ -323,6 +323,16 @@ body.dark-mode .month-header {
   color: var(--text-color);
 }
 
+/* Fix for iOS date and time input fitting in the popup menu */
+.input-group input[type="date"],
+.input-group input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 48px;
+  padding-top: 1.1rem;
+  padding-bottom: 0.4rem;
+}
+
 .input-group label {
   position: absolute;
   top: 0.75rem; 
