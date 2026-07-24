@@ -277,7 +277,7 @@ body.dark-mode .month-header {
 .modal-content {
   background-color: var(--card-bg);
   margin: 60px auto;
-  padding: 1rem;
+  padding: 1.2rem;
   border-radius: 8px;
   width: 90%;
   max-width: 400px;
@@ -304,18 +304,25 @@ body.dark-mode .month-header {
 }
 
 /* ===========================
-   Inputs & Floating Labels
+   Standard Form Inputs & Layout
 =========================== */
 .input-group {
-  position: relative;
-  margin-top: 1.2rem; 
+  margin-bottom: 1rem; 
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-color);
 }
 
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 0.8rem 0.5rem 0.4rem 0.5rem; 
-  font-size: 0.9rem;
+  padding: 0.7rem; 
+  font-size: 0.95rem;
   border: 1px solid var(--input-border);
   border-radius: 6px;
   outline: none;
@@ -323,29 +330,18 @@ body.dark-mode .month-header {
   color: var(--text-color);
 }
 
-.input-group label {
-  position: absolute;
-  top: 0.8rem; 
-  left: 0.5rem;
-  pointer-events: none;
-  transition: 0.2s ease all;
-  font-size: 0.85rem;
-  color: #888;
-}
-
-/* Standardized Floating Behavior: floats when focused, filled, or when date/time inputs are interacted with */
-.input-group input:focus + label,
-.input-group select:focus + label,
-.input-group input:not(:placeholder-shown) + label,
-.input-group select:not([value=""]) + label,
-.input-group input[type="date"]:valid + label,
-.input-group input[type="time"]:valid + label {
-  top: -0.5rem;      
-  left: 0.4rem;
-  font-size: 0.75rem; 
-  color: #1e90ff;
-  background: var(--card-bg);   
-  padding: 0 0.2rem;  
+.modal-content form button[type="submit"] {
+  margin-top: 0.5rem;
+  background: #1e90ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
 .month-card .entry-container {
