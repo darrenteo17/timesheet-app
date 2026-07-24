@@ -3,98 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGrader</title>
+  <title>Timesheet App</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <header>AGrader</header>
 
-  <main>
-    <!-- Dashboard -->
-    <div class="dashboard">
-      <div class="dashboard-card">
-        <p>Total Hours</p>
-        <h3 id="totalHours">0</h3>
-      </div>
-      <div class="dashboard-card">
-        <p>Total Gross</p>
-        <h3 id="totalGross">0</h3>
-      </div>
-      <div class="dashboard-card">
-        <p>Total Net</p>
-        <h3 id="totalNet">0</h3>
-      </div>
-      <div class="dashboard-card">
-        <p>Total CPF</p>
-        <h3 id="totalCPF">0</h3>
-      </div>
-    </div>
+<header>
+  <h1>Timesheet</h1>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <input type="text" id="searchInput" placeholder="Search..." style="padding: 0.4rem; border-radius: 4px; border: none; outline: none; width: 80px; font-size: 0.85rem;">
+    <select id="monthFilter" style="padding: 0.4rem; border-radius: 4px; border: none; outline: none;"></select>
+    <button id="openStats" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer;" title="Statistics">📊</button>
+    <button id="toggleDarkMode" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer;" title="Toggle Dark Mode">🌙</button>
+    <button id="openSettings" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: white;" title="Settings">⚙️</button>
+  </div>
+</header>
 
-    <button class="clear-btn" id="clearAll">Clear All Entries</button>
-
-    <!-- Entries -->
-    <div id="entries"></div>
-
-    <!-- Notes -->
-    <div id="notes" style="display:none;"></div>
-  </main>
-
-  <!-- Bottom Navigation -->
-  <div class="bottom-nav">
-    <button id="tabTimesheet" class="active">Timesheet</button>
-    <button id="tabNotes">Notes</button>
+<main>
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+    <div class="dashboard-item"><p>Total Hours</p><p id="totalHours">0</p></div>
+    <div class="dashboard-item"><p>Total Gross</p><p>$<span id="totalGross">0</span></p></div>
+    <div class="dashboard-item"><p>Total Net</p><p>$<span id="totalNet">0</span></p></div>
+    <div class="dashboard-item"><p>Total CPF</p><p>$<span id="totalCPF">0</span></p></div>
   </div>
 
-  <!-- Floating Buttons -->
-  <div class="fab" id="addEntryBtn">+</div>
-  <div class="fab" id="addNoteBtn" style="bottom: 90px;">📝</div>
-
-  <!-- Timesheet Modal -->
-  <div id="entryModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeEntry">&times;</span>
-      <form id="timesheetForm">
-        <div class="input-group">
-          <label for="dateWorked">Date Worked</label>
-          <input type="date" id="dateWorked" required>
-        </div>
-        <div class="input-group">
-          <label for="branch">Branch</label>
-          <select id="branch" required>
-            <option value="">Select Branch</option>
-            <option value="Buangkok">Buangkok</option>
-            <option value="Ang Mo Kio">Ang Mo Kio</option>
-            <option value="Fernvale">Fernvale</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label for="timeIn">Time In</label>
-          <input type="time" id="timeIn" required>
-        </div>
-        <div class="input-group">
-          <label for="timeOut">Time Out</label>
-          <input type="time" id="timeOut" required>
-        </div>
-        <button type="submit">Add Entry</button>
-      </form>
-    </div>
+  <!-- Clear All button -->
+  <div class="clear-container">
+    <button id="clearAll">Clear All</button>
   </div>
 
-  <!-- Notes Modal -->
-  <div id="noteModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeNote">&times;</span>
-      <form id="noteForm">
-        <div class="input-group">
-          <label for="noteText">Note</label>
-          <textarea id="noteText" required></textarea>
-        </div>
-        <button type="submit">Add Note</button>
-      </form>
-    </div>
+  <div class="backup-container">
+    <button id="exportData">Backup</button>
+    <button id="importData">Restore</button>
+    <button id="exportCSV">CSV</button>
+    <input type="file" id="importFile" accept=".json" hidden>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Entries container -->
+  <div id="entries"></div>
+</main>
+
+<!-- Floating Action Button -->
+<button id="fab" class="fab">+</button>
+
+<!-- Modal for adding/editing entry -->
+<div id="entryModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeEntry">&times;</span>
+    <h2 id="modalTitle">Add Entry</h2>
+    <form id="timesheetForm">
+      <div class="input-group">
+        <input type="date" id="dateWorked" placeholder=" " required>
+        <label for="dateWorked">Date Worked</label>
+      </div>
+
+      <div class="input-group">
+        <select id="branch" required>
+          <!-- Populated dynamically -->
+        </select>
+        <label for="branch">Branch</label>
+      </div>
+
+      <div class="input-group">
+        <input type="time" id="timeIn" placeholder=" " required>
+        <label for="timeIn">Time In</label>
+      </div>
+
+      <div class="input-group">
+        <input type="time" id="timeOut" placeholder=" " required>
+        <label for="timeOut">Time Out</label>
+      </div>
+
+      <button type="submit">Add Entry</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for Settings -->
+<div id="settingsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeSettings">&times;</span>
+    <h2>Settings</h2>
+    <form id="settingsForm">
+      <div class="input-group">
+        <input type="number" id="setHourlyRate" step="0.5" placeholder=" " required>
+        <label for="setHourlyRate">Hourly Rate ($)</label>
+      </div>
+      <div class="input-group">
+        <input type="number" id="setEmployeeCpf" step="1" placeholder=" " required>
+        <label for="setEmployeeCpf">Employee CPF Deduction (%)</label>
+      </div>
+      <div class="input-group">
+        <input type="number" id="setEmployerCpf" step="1" placeholder=" " required>
+        <label for="setEmployerCpf">Employer CPF Contribution (%)</label>
+      </div>
+      <div class="input-group">
+        <input type="text" id="setBranches" placeholder=" " required>
+        <label for="setBranches">Branches (comma separated)</label>
+      </div>
+      <button type="submit">Save Settings</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for Statistics -->
+<div id="statsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeStats">&times;</span>
+    <h2>Statistics</h2>
+    <div id="statsContainer">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(err => console.log('Service Worker failed', err));
+    });
+  }
+</script>
+
 </body>
 </html>
