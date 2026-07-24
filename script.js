@@ -91,7 +91,7 @@ function recalculateAllMonths() {
   });
 }
 
-// Initial calculation and sort on load (ascending date order so earlier dates appear on top)
+// Initial calculation and sort on load (ascending date order so earlier dates appear on top within months)
 recalculateAllMonths();
 entries.sort((a, b) => {
   if (a.rawDate !== b.rawDate) return a.rawDate.localeCompare(b.rawDate);
@@ -150,8 +150,12 @@ function populateMonthFilter() {
   const currentValue = filter.value; 
   const monthsArr = [...new Set(entries.map(e => e.month))];
   
-  // Sort months descending so the most recent months are automatically on top
-  monthsArr.sort((a, b) => new Date(b) - new Date(a));
+  // Sort months descending using rawDate comparison (most recent months on top)
+  monthsArr.sort((a, b) => {
+    const dateA = entries.find(e => e.month === a)?.rawDate || "";
+    const dateB = entries.find(e => e.month === b)?.rawDate || "";
+    return dateB.localeCompare(dateA);
+  });
   
   filter.innerHTML = '<option value="all">All Months</option>';
   monthsArr.forEach(month => {
@@ -206,7 +210,9 @@ function renderEntries(filterMonth = "all", searchQuery = "") {
   });
 
   const sortedMonths = Object.keys(months).sort((a, b) => {
-    return new Date(b) - new Date(a);
+    const dateA = months[a][0]?.rawDate || "";
+    const dateB = months[b][0]?.rawDate || "";
+    return dateB.localeCompare(dateA);
   });
 
   sortedMonths.forEach(month => {
