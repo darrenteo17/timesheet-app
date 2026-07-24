@@ -304,24 +304,21 @@ body.dark-mode .month-header {
 }
 
 /* ===========================
-   Form Inputs & Layout
+   Aligned Floating Label Inputs
 =========================== */
 .input-group {
-  margin-bottom: 1rem; 
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-color);
+  position: relative;
+  margin-top: 1.4rem;
+  margin-bottom: 0.8rem;
+  width: 100%;
 }
 
 .input-group input,
 .input-group select {
-  width: 100%;
-  padding: 0.7rem; 
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 46px;
+  padding: 1.1rem 0.6rem 0.3rem 0.6rem;
   font-size: 0.95rem;
   border: 1px solid var(--input-border);
   border-radius: 6px;
@@ -330,8 +327,20 @@ body.dark-mode .month-header {
   color: var(--text-color);
 }
 
+.input-group label {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.6rem;
+  pointer-events: none;
+  font-size: 0.75rem;
+  color: #1e90ff;
+  background: var(--card-bg);
+  padding: 0 0.2rem;
+  transition: 0.2s ease all;
+}
+
 .modal-content form button[type="submit"] {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   background: #1e90ff;
   color: white;
   font-weight: bold;
