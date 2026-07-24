@@ -1,204 +1,420 @@
-/* Reset & Base */
-* {
-  margin: 0;
-  padding: 0;
+/* ===========================
+   Global & Theme Variables
+=========================== */
+:root {
+  --bg-color: #f4f4f4;
+  --text-color: #333;
+  --card-bg: #fff;
+  --header-bg: #1e90ff;
+  --dashboard-item-bg: #f0f8ff;
+  --border-color: #eee;
+  --input-bg: #fff;
+  --input-border: #ccc;
+  --modal-overlay: rgba(0,0,0,0.5);
+}
+
+body.dark-mode {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --header-bg: #222;
+  --dashboard-item-bg: #2d2d2d;
+  --border-color: #444;
+  --input-bg: #333;
+  --input-border: #555;
+  --modal-overlay: rgba(0,0,0,0.8);
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
 }
 
 body {
-  background: #f5f5f5;
-  color: #333;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
+/* ===========================
+   Header
+=========================== */
 header {
-  background: #4CAF50;
+  background: var(--header-bg);
   color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 1.5rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background-color 0.3s;
 }
 
-/* Dashboard */
+header input, header select {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+}
+
+/* ===========================
+   Main
+=========================== */
+main {
+  padding: 1rem;
+}
+
+/* ===========================
+   Dashboard
+=========================== */
 .dashboard {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
-  margin: 10px;
+  gap: 0.5rem;
+  background: var(--card-bg);
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s;
 }
 
-.dashboard-card {
+.dashboard-item {
   flex: 1 1 45%;
-  background: #fff;
-  margin: 5px;
-  padding: 10px;
-  border-radius: 10px;
+  background: var(--dashboard-item-bg);
   text-align: center;
-  font-size: 0.9rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 0.3rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  font-size: 0.85rem;
+  transition: background-color 0.3s;
 }
 
-/* Clear button */
-.clear-btn {
-  background: #e53935;
+/* ===========================
+   Buttons
+=========================== */
+.clear-container {
+  margin-bottom: 0.5rem;
+}
+
+#clearAll {
+  background: #ff4d4f;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 10px 15px;
-  margin: 10px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-}
-
-/* Tabs */
-.bottom-nav {
-  display: flex;
-  justify-content: space-around;
-  background: #fff;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
-}
-
-.bottom-nav button {
-  flex: 1;
-  padding: 12px 0;
-  border: none;
-  background: none;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.bottom-nav button.active {
-  color: #4CAF50;
   font-weight: bold;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  transition: box-shadow 0.2s ease;
 }
 
-/* Sections */
-section {
-  padding: 10px;
-  margin-bottom: 60px; /* for bottom nav */
+#clearAll:active {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
 }
 
-/* Entries & Notes Cards */
-.entry-card, .note-card {
-  background: #fff;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  font-size: 0.9rem;
-}
-
-.entry-card p, .note-card p {
-  margin: 4px 0;
-}
-
-/* FAB */
-.fab {
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  background: #4CAF50;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 2rem;
+.backup-container {
   display: flex;
-  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.backup-container button {
+  flex: 1;
+  background: var(--card-bg);
+  color: #1e90ff;
+  border: 1px solid #1e90ff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.backup-container button:hover {
+  background: #1e90ff;
+  color: white;
+}
+
+/* ===========================
+   Month cards
+=========================== */
+.month-card {
+  background: var(--card-bg);
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
+
+.month-header {
+  background: #1e90ff;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-size: 0.8rem;
 }
 
-/* Modals */
+body.dark-mode .month-header {
+  background: #2d2d2d;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.entry-card {
+  padding: 0.4rem 0.8rem;
+  border-top: 1px solid var(--border-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 0.85rem;
+}
+
+.entry-buttons button {
+  margin-right: 0.4rem;
+  background: #1e90ff;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  font-size: 0.75rem;
+}
+
+.entry-buttons button:last-child {
+  background: #ff4d4f;
+}
+
+/* ===========================
+   Floating Action Button
+=========================== */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: #1e90ff;
+  color: white;
+  font-size: 32px;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* ===========================
+   Modal
+=========================== */
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   overflow: auto;
+  background-color: var(--modal-overlay);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: block;
+  opacity: 1;
 }
 
 .modal-content {
-  background: #fff;
-  margin: 50px auto;
-  padding: 15px;
-  border-radius: 10px;
+  background-color: var(--card-bg);
+  margin: 60px auto;
+  padding: 1rem;
+  border-radius: 8px;
   width: 90%;
   max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  transform: translateY(-50px);
+  transition: transform 0.3s ease, background-color 0.3s;
+  overflow-x: hidden;
 }
 
-/* Close button */
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
 .close {
   color: #aaa;
   float: right;
-  font-size: 1.5rem;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
 }
 
-/* Input groups */
+.close:hover {
+  color: var(--text-color);
+}
+
+/* ===========================
+   Inputs
+=========================== */
 .input-group {
   position: relative;
-  margin-bottom: 15px;
+  margin-top: 1.2rem; 
 }
 
 .input-group input,
-.input-group select,
-.input-group textarea {
+.input-group select {
   width: 100%;
-  padding: 8px 5px;
+  padding: 0.75rem 0.5rem 0.25rem 0.5rem; 
   font-size: 0.9rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
   outline: none;
-  resize: none;
+  background-color: var(--input-bg);
+  color: var(--text-color);
 }
 
 .input-group label {
   position: absolute;
-  top: -8px;
-  left: 10px;
-  background: #fff;
-  padding: 0 4px;
-  font-size: 0.8rem;
-  color: #666;
+  top: 0.75rem; 
+  left: 0.5rem;
+  pointer-events: none;
+  transition: 0.2s ease all;
+  font-size: 0.85rem;
+  color: #888;
 }
 
-/* Auto-resize textarea */
-.auto-resize {
-  overflow: hidden;
+.input-group input:focus + label,
+.input-group select:focus + label,
+.input-group input:not(:placeholder-shown) + label,
+.input-group select:not([value=""]) + label {
+  top: -0.5rem;       
+  left: 0.4rem;
+  font-size: 0.75rem; 
+  color: #1e90ff;
+  background: var(--card-bg);   
+  padding: 0 0.2rem;  
 }
 
-/* Buttons inside cards */
-.entry-buttons, .note-buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 5px;
-}
-
-.entry-buttons button,
-.note-buttons button {
-  margin-left: 5px;
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  border-radius: 5px;
-  border: none;
+.modal-content button[type="submit"] {
+  margin-top: 1rem;
+  background: #1e90ff;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 0.6rem;
+  border: none;
 }
 
-.entry-buttons button:nth-child(1) { background: #FFC107; color: #fff; }
-.entry-buttons button:nth-child(2) { background: #e53935; color: #fff; }
-.note-buttons button { background: #4CAF50; color: #fff; }
+.month-card .entry-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
 
-/* Responsive adjustments */
-@media (max-width: 400px) {
-  .dashboard-card {
-    flex: 1 1 100%;
-  }
+.month-card .entry-container.show {
+  max-height: 10000px;
+  opacity: 1;
+}
+
+/* ===========================
+   Statistics Modal Styling
+=========================== */
+.stat-box {
+  background: var(--dashboard-item-bg);
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+.stat-box h3 { margin: 0; font-size: 0.85rem; color: #888; }
+.stat-box p { margin: 0.2rem 0 0; font-weight: bold; font-size: 1.1rem; color: #1e90ff; }
+.stat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+}
+.stat-list li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.stat-list li:last-child { border-bottom: none; }
+
+/* CSS Bar Chart */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 150px;
+  padding-top: 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+.chart-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  width: 30px;
+}
+.chart-bar {
+  width: 100%;
+  background: #1e90ff;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.5s ease;
+}
+.chart-label {
+  font-size: 0.65rem;
+  margin-top: 5px;
+  color: #888;
+}
+
+/* ===========================
+   Toast Notification
+=========================== */
+.toast {
+  visibility: hidden;
+  min-width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px 20px;
+  position: fixed;
+  z-index: 2000;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease, bottom 0.3s ease, visibility 0.3s ease;
+}
+
+body.dark-mode .toast {
+  background-color: #1e90ff; /* Uses your primary blue in dark mode so it stands out */
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 40px; /* Slides up slightly when shown */
 }
