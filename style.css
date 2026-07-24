@@ -46,12 +46,19 @@ body {
 header {
   background: var(--header-bg);
   color: white;
-  padding: 1rem;
+  padding: 0.8rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   transition: background-color 0.3s;
+}
+
+header h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  white-space: nowrap;
 }
 
 header input, header select {
@@ -410,11 +417,11 @@ body.dark-mode .month-header {
 }
 
 body.dark-mode .toast {
-  background-color: #1e90ff; /* Uses your primary blue in dark mode so it stands out */
+  background-color: #1e90ff;
 }
 
 .toast.show {
   visibility: visible;
   opacity: 1;
-  bottom: 40px; /* Slides up slightly when shown */
+  bottom: 40px;
 }
